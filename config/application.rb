@@ -1,6 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'neo4j/railtie'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -11,6 +12,11 @@ end
 
 module Together
   class Application < Rails::Application
+
+    # Configure Neo4j session type
+    config.neo4j.session_type = :server_db
+    config.neo4j.session_path = ENV['GRAPHENEDB_URL'] || 'http://localhost:7474'
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -51,7 +57,7 @@ module Together
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-    config.active_record.whitelist_attributes = true
+    #config.active_record.whitelist_attributes = true
 
     # Enable the asset pipeline
     config.assets.enabled = true
