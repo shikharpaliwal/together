@@ -31,10 +31,10 @@ class Activity
 
   def self.search(user, params)
     p params
-    query = Activity
-    query = query.where(:tag_do => params["tag_do"]) if params["tag_do"].present?
-    query = query.where(:tag_what => params["tag_what"]) if params["tag_what"].present?
-    query = query.where(:tag_when => params["tag_when"]) if params["tag_when"].present?
+    query = Activity.limit(10)
+    query = query.where(:tag_do => /#{params["tag_do"]}.*/) if params["tag_do"].present?
+    query = query.where(:tag_what => /#{params["tag_what"]}.*/) if params["tag_what"].present?
+    query = query.where(:tag_when => /#{params["tag_when"]}.*/) if params["tag_when"].present?
     activities = query.entries
     response = activities.collect{|activity|
       creator = activity.creator
