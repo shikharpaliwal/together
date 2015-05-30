@@ -4,9 +4,8 @@ class User
   property :name, type: String
   property :number, type: String
   property :byline, type: String
-  property :session_token, type: String
 
-  validates :name, :number, :session_token, presence: true
+  validates :name, :number, presence: true
   validates :number, uniqueness: true
 
   has_many :out, :friends, type: 'friends', model_class: User
@@ -16,8 +15,7 @@ class User
     params["number"] = params["number"].last(10)
     user = User.where(:number => params["number"]).first
     if user.blank?
-      params["session_token"] = rand(100000)
-      user = User.create(params.select{ |k,v| ["name", "number", "session_token", "byline"].include? k })
+      user = User.create(params.select{ |k,v| ["name", "number", "byline"].include? k })
     else
       user.name = params[:name]
       user.byline = params[:byline]
@@ -27,7 +25,7 @@ class User
   end
 
   def self.find_by_session_token(session_token)
-    where(:session_token => session_token).last
+    where(:id => session_token).last
   end
 
   def self.add_friends(user, params)
