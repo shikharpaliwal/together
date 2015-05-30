@@ -14,8 +14,7 @@ class Activity
   has_one :out, :creator, type: 'created_by', model_class: User
 
   def self.create_activity(user, params)
-    params["tag_when"].downcase!
-    activity = Activity.create(params)
+    activity = Activity.create(params.select{ |x| ["tag_do", "tag_what", "tag_when"].include? x })
     activity.creator = user
     activity.participants << user
   end
@@ -31,6 +30,7 @@ class Activity
   end
 
   def self.search(user, params)
+    p params
     query = Activity
     query = query.where(:tag_do => params["tag_do"]) if params["tag_do"].present?
     query = query.where(:tag_what => params["tag_what"]) if params["tag_what"].present?

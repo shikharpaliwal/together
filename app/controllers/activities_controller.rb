@@ -1,7 +1,7 @@
 class ActivitiesController < ApplicationController
 
   def search
-    cards = Activity.search(params, @user_node)
+    cards = Activity.search(@user, params)
     render json: { "activities" => cards }, status: 200
   end
 

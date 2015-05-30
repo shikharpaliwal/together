@@ -14,15 +14,25 @@ class User
 
   def self.modified_find_or_create(params)
     params["number"] = params["number"].last(10)
-    params["session_token"] = SecureRandom.base64(64).gsub(/[$=+\/]/,65.+(rand(25)).chr)
-    find_or_create(params)
+    user = User.where(:number => params["number"]).first
+    if user.blank?
+      params["session_token"] = rand(100000)
+      user = User.create(params.select{ |k,v| ["name", "number", "session_token", "byline"].include? k })
+    else
+      user.name = params[:name]
+      user.byline = params[:byline]
+      user.save
+    end
+    return user
   end
 
   def self.find_by_session_token(session_token)
-    where(:session_token => session_token)
+    where(:session_token => session_token).last
   end
 
   def self.add_friends(user, params)
+    p params
+    p user
     params["friends"].each do |friend|
       friend_user = modified_find_or_create(friend)
       user.friends << friend_user

@@ -5,7 +5,7 @@ Together::Application.routes.draw do
   get "/tag/trending" => 'tags#trending'
   get "/tag/autocomplete" => 'tags#autocomplete'
   get "/activity/search" => 'activities#search'
-  get "/activity/create" => 'activities#create'
+  post "/activity/create" => 'activities#create'
   get "/activity/trending" => 'activities#trending'
   get "/activity/random" => 'activities#random'
   post "/activity/participate" => 'activities#participate'
