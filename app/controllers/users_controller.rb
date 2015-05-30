@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
   def login
-    user = User.find_or_create(params)
+    user = User.modified_find_or_create(params)
     render json: { "session_token" => user["data"]["session_token"] }, status: 200
   end
 

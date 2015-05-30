@@ -6,27 +6,27 @@ class ActivitiesController < ApplicationController
   end
 
   def create
-    Activity.create(params, @user_node)
+    Activity.create_activity(@user, params)
     render nothing: true, status: 200
   end
 
   def trending
-    cards = Activity.search(params, @user_node)
+    cards = Activity.search(@user, params)
     render json: { "activities" => cards }, status: 200
   end
 
   def random
-    cards = Activity.search(params, @user_node)
+    cards = Activity.search(@user, params)
     render json: { "activities" => cards }, status: 200
   end
 
   def participate
-    Activity.participate(params, @user_node)
+    Activity.participate(@user, params)
     render nothing: true, status: 200
   end
 
   def leave
-    Activity.leave(params, @user_node)
+    Activity.leave(@user, params)
     render nothing: true, status: 200
   end
 

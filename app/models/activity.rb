@@ -1,34 +1,53 @@
 class Activity
   include Neo4j::ActiveNode
 
-  # LABEL = "Activity"
-
-  # # PARAMS
-  # #tag1* => “play”
-  # #tag2* => “game”
-  # #lat => “23.2323”
-  # #lon => “23.2323”
-  # def search(params, user_node)
-  # end
-
-  # def create(params, user_node)
-  # end
-
-  # def participate(params, user_node)
-  #   activity_node = neo.find_nodes_labeled(LABEL, { :id => params[:activity_id] })
-  #   neo.create_relationship("participate", user_node, activity_node)
-  # end
-
-  # def leave(params, user_node)
-  #   activity_node = neo.find_nodes_labeled(LABEL, { :id => params[:activity_id] })
-  #   neo.create_relationship("participate", user_node, activity_node)
-  # end
-
-
-  property :tag_on, type: String
+  property :created_at
+  property :tag_do, type: String
   property :tag_what, type: String
-  property :tag_what, type: String
+  property :tag_when, type: String
+  property :lat
+  property :lon
 
-  validates :tag_on, :tag_what, presence: true
+  validates :tag_do, :tag_what, presence: true
+
+  has_many :in, :participants, type: 'participating_in', model_class: User
+  has_one :out, :creator, type: 'created_by', model_class: User
+
+  def self.create_activity(user, params)
+    params["tag_when"].downcase!
+    activity = Activity.create(params)
+    activity.creator = user
+    activity.participants << user
+  end
+
+  def self.participate(user, params)
+    activity = Activity.find(params[:activity_id])
+    activity.participants << user
+  end
+
+  def self.leave(user, params)
+    activity = Activity.find(params[:activity_id])
+    activity.participants -= [user]
+  end
+
+  def self.search(user, params)
+    query = Activity
+    query = query.where(:tag_do => params["tag_do"]) if params["tag_do"].present?
+    query = query.where(:tag_what => params["tag_what"]) if params["tag_what"].present?
+    query = query.where(:tag_when => params["tag_when"]) if params["tag_when"].present?
+    activities = query.entries
+    response = activities.collect{|activity|
+      creator = activity.creator
+      {
+        "id" => activity.id,
+        "creator_name" => creator.name,
+        "creator_number" => creator.number,
+        "tag_do" => activity.tag_do,
+        "tag_what" => activity.tag_what,
+        "tag_when" => activity.tag_when,
+        "participants" => activity.participants.collect{ |user| { "name" => user.name, "number" => user.number } }
+      }
+    }
+  end
 
 end

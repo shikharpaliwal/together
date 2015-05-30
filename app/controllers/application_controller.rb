@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   def find_user
     if params[:session_token].present?
-      @user_node = User.find_by_session_token(params[:session_token])
+      @user = User.find_by_session_token(params[:session_token])
     end
   end
 

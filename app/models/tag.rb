@@ -1,24 +1,21 @@
 class Tag
+  include Neo4j::ActiveNode
 
-  TAG1 = []
-  TAG2 = []
+  property :tag_do, type: String
+  property :tag_what, type: String
 
-  #return array of tag1, tag2 which are trending
+  #return array of tag_do, tag_what which are trending
   def get_trending_tags
-    [
-      { "tag1" => "play", "tag2" => "football" },
-      { "tag2" => "play", "tag2" => "cricket"},
-      { "tag2" => "watch", "tag2" => "cricket"},
-      { "tag2" => "watch", "tag2" => "movie"},
-      { "tag2" => "shop", "tag2" => "shoes"},
-    ]
+    return Tag.limit(10).collect{ |tag|
+      { "tag_do" => tag.tag_do, "tag_what" => tag.tag_what }
+    }
   end
 
   def autocomplete(params)
-    if params["type2"] == "tag1"
-      TAG1.select{ |tag| /^#{params["value"]}/ === tag }[0..2]
-    else params["type2"] == "tag2"
-      TAG2.select{ |tag| /^#{params["value"]}/ === tag }[0..2]
+    if params["type"] == "tag_do"
+      Tag.where(:tag_do => /#{params["value"].*}/).limit(3).pluck(:tag_do)
+    else params["type"] == "tag_what"
+      Tag.where(:tag_do => params["tag_do"],:tag_what => /#{params["value"].*}/).limit(3).pluck(:tag_what)
     end
   end
 
